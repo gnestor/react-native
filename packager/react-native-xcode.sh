@@ -10,6 +10,17 @@
 # This script is supposed to be invoked as part of Xcode build process
 # and relies on envoronment variables (including PWD) set by Xcode
 
+# Skip this script if jsCodeLocation type is 'NSURL'
+
+# Find the app's AppDelegate.m file
+app_delegate=$(find ./../../../iOS -name 'AppDelegate.m')
+# Find the last jsCodeLocation assignment (that is not a comment)
+type=$(awk '/jsCodeLocation =/ && !/\/\/ /' $app_delegate | tail -1)
+# If the jsCodeLocation type is 'NSURL', then skip the bundle script
+if [[ "$type" =~ "NSURL" ]]; then
+  exit 1
+fi
+
 case "$CONFIGURATION" in
   Debug)
     DEV=true
